@@ -1,0 +1,2 @@
+# data-structures
+Project I have been working on during my Data Stuctures laboratories in the university. It contains implementation of bunch of data structures altogether with fundamental algorithms performed on them. Algorithms' complexity was also taken into consideration and testes. All txt files contain time consumed to perform specific algorithms. Then those times were presented on the chart and analyzed thoroughly. 
