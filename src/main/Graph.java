@@ -1,6 +1,11 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class Graph<T> {
 
@@ -15,6 +20,8 @@ public class Graph<T> {
 	private int[][] p;
 	private double[][] d;
 	private int[] pd;
+	private Map<Integer, Double> v;
+	private int allExist = 0;
 
 	public Graph(int n) {
 		size = n;
@@ -24,26 +31,254 @@ public class Graph<T> {
 		a = new double[n][n];
 		p = new int[n][n];
 		d = new double[1][n];
-
+		pd = new int[n];
 	}
 
-	public void Dijkstra(T departureNode) {
+	public boolean existsPath(T departure, T arrival, List<T> excludeNodes) {
+		int departureNodeIndex = getNode(departure);
+		int arrivalNodeIndex = getNode(arrival);
+		if (departureNodeIndex == INDEX_NOT_FOUND || arrivalNodeIndex == INDEX_NOT_FOUND) {
+			throw new IllegalArgumentException("Departure or/and arrival node does not exist");
+		}
+		allExist = 0;
+		for (T node : excludeNodes) {
+			nodes.stream().map(g -> g.getElement()).forEach(ch -> {
+				if (ch.equals(node)) {
+					allExist++;
+				}
+			});
+			if (allExist == 0) {
+				throw new IllegalArgumentException();
+			}
+		}
 
+//		DijkstraWithoutNodes2(departure, excludeNodes);
+		DijkstraWithoutSpecifiNodes(departure, excludeNodes);
+//		Dijkstra(departure);
+		if (d[0][arrivalNodeIndex] != INFINITE) {
+			return true;
+		}
+		return false;
 	}
 
-	private void initDijkstra(T departureNode) {
+	public void DijkstraWithoutNodes2(T departureNode, List<T> excludeNodes) {
+		initDijkstra(departureNode);
+
 		int nodeIndex = getNode(departureNode);
+		if (nodeIndex == -1) {
+			throw new IllegalArgumentException("Node does not exist");
+		}
 
-		for (int j = 0; j < this.size; j++) {
+		v = new HashMap<>(); // map that stores pairs [index][weight from nodeIndex to index]
+		for (int i = 0; i < getSize(); i++) {
+			if (i != nodeIndex) { // nodeIndex is already in set S <- this is initialized in initDiakstra method
+				v.put(i, d[0][i]);
+			}
+		}
+
+		while (!v.isEmpty()) {
+			ArrayList<Double> values = new ArrayList<>();
+			v.values().iterator().forEachRemaining(val -> values.add(val));
+			Collections.sort(values);
+
+			// It works like in normal DIjkstra algorithm. We take the node that is
+			// connected to our node via edge with the smallest weight and check if it can
+			// be a node that mediates between any other node.
+			double smallestWeight = values.get(0);
+			int indexOfTheSmallestWeight = getKeysByValue(v, smallestWeight);
+			if (smallestWeight == INFINITE) { // it means that there is no direct node left use as a pivot
+				break;
+			}
+
+			for (int j = 0; j < getSize(); j++) {
+				if (j != nodeIndex && !excludeNodes.contains(nodes.get(j).getElement())) {
+					if (edges[indexOfTheSmallestWeight][j]) {
+						if (d[0][indexOfTheSmallestWeight] + weight[indexOfTheSmallestWeight][j] < d[0][j]) {
+							d[0][j] = d[0][indexOfTheSmallestWeight] + weight[indexOfTheSmallestWeight][j];
+							pd[j] = indexOfTheSmallestWeight;
+						}
+					}
+				}
+			}
+			v.remove(indexOfTheSmallestWeight); // removing node from v set, basically it means putting node to S set
+			updateV();
+		}
+	}
+
+	private void DijkstraWithoutSpecifiNodes(T departureNode, List<T> excludeNodes) {
+		initDijkstra(departureNode);
+
+		int nodeIndex = getNode(departureNode);
+		if (nodeIndex == -1) {
+			throw new IllegalArgumentException("Node does not exist");
+		}
+		nodes.get(nodeIndex).setVisited(true);
+
+		double minimumCost = INFINITE;
+		T pivot = departureNode;
+
+		/*
+		 * List<Integer> indexesOfExcludedNodes = new ArrayList<>(); for (T node :
+		 * excludeNodes) { int index = getNode(node); if (index == INDEX_NOT_FOUND) {
+		 * throw new IllegalArgumentException("Node does not exist"); } else {
+		 * indexesOfExcludedNodes.add(index); } }
+		 */
+
+		for (int i = 1; i < getSize(); i++) {
+
+			for (int j = 0; j < getSize(); j++) {
+				for (int k = 0; k < getSize(); k++) {
+//					if (!indexesOfExcludedNodes.contains(k)) {
+					if (!excludeNodes.contains(nodes.get(k).getElement())) {
+						if (nodes.get(j).isVisited() && !nodes.get(k).isVisited()) {
+							if (weight[j][k] != 0 && weight[j][k] < minimumCost) {
+								minimumCost = weight[j][k];
+								pivot = nodes.get(k).getElement();
+							}
+						}
+					}
+				}
+			}
+
+			for (int k = 0; k < getSize(); k++) {
+//				if (!indexesOfExcludedNodes.contains(k)) {
+				if (!excludeNodes.contains(nodes.get(k).getElement())) {
+					if (!nodes.get(k).isVisited() && weight[getNode(pivot)][k] != 0) {
+						if (d[0][getNode(pivot)] + weight[getNode(pivot)][k] < d[0][k]) {
+							d[0][k] = d[0][getNode(pivot)] + weight[getNode(pivot)][k];
+							pd[k] = getNode(pivot);
+						}
+					}
+				}
+			}
+			nodes.get(getNode(pivot)).setVisited(true);
+			minimumCost = INFINITE;
+		}
+	}
+
+	/**
+	 * Implementation of Dijkstra algorithm with the complexity of O(n^3)
+	 * 
+	 * @param departureNode
+	 */
+	public void Dijkstra(T departureNode) {
+		initDijkstra(departureNode);
+
+		int nodeIndex = getNode(departureNode);
+		if (nodeIndex == -1) {
+			throw new IllegalArgumentException("Node does not exist");
+		}
+		nodes.get(nodeIndex).setVisited(true);
+
+		double minimumCost = INFINITE;
+		T pivot = departureNode;
+
+		for (int i = 1; i < getSize(); i++) {
+
+			for (int j = 0; j < getSize(); j++) {
+				for (int k = 0; k < getSize(); k++) {
+					if (nodes.get(j).isVisited() && !nodes.get(k).isVisited()) {
+						if (weight[j][k] != 0 && weight[j][k] < minimumCost) {
+							minimumCost = weight[j][k];
+							pivot = nodes.get(k).getElement();
+						}
+					}
+				}
+			}
+
+			for (int k = 0; k < getSize(); k++) {
+				if (!nodes.get(k).isVisited() && weight[getNode(pivot)][k] != 0) {
+					if (d[0][getNode(pivot)] + weight[getNode(pivot)][k] < d[0][k]) {
+						d[0][k] = d[0][getNode(pivot)] + weight[getNode(pivot)][k];
+						pd[k] = getNode(pivot);
+					}
+				}
+			}
+			nodes.get(getNode(pivot)).setVisited(true);
+			minimumCost = INFINITE;
+		}
+	}
+
+	/**
+	 * Implementation of Dijkstra algorithm with the complexity of O(n^2)
+	 * 
+	 * @param departureNode
+	 */
+	public void Dijkstra2(T departureNode) {
+		initDijkstra(departureNode);
+
+		int nodeIndex = getNode(departureNode);
+		if (nodeIndex == -1) {
+			throw new IllegalArgumentException("Node does not exist");
+		}
+
+		v = new HashMap<>(); // map that stores pairs [index][weight from nodeIndex to index]
+		for (int i = 0; i < getSize(); i++) {
+			if (i != nodeIndex) { // nodeIndex is already in set S <- this is initialized in initDiakstra method
+				v.put(i, d[0][i]);
+			}
+		}
+
+		while (!v.isEmpty()) {
+			ArrayList<Double> values = new ArrayList<>();
+			v.values().iterator().forEachRemaining(val -> values.add(val));
+			Collections.sort(values);
+
+			// It works like in normal DIjkstra algorithm. We take the node that is
+			// connected to our node via edge with the smallest weight and check if it can
+			// be a node that mediates between any other node.
+			double smallestWeight = values.get(0);
+			int indexOfTheSmallestWeight = getKeysByValue(v, smallestWeight);
+			if (smallestWeight == INFINITE) { // it means that there is no direct node left use as a pivot
+				break;
+			}
+
+			for (int j = 0; j < getSize(); j++) {
+				if (j != nodeIndex) {
+					if (edges[indexOfTheSmallestWeight][j]) {
+						if (d[0][indexOfTheSmallestWeight] + weight[indexOfTheSmallestWeight][j] < d[0][j]) {
+							d[0][j] = d[0][indexOfTheSmallestWeight] + weight[indexOfTheSmallestWeight][j];
+							pd[j] = indexOfTheSmallestWeight;
+						}
+					}
+				}
+			}
+			v.remove(indexOfTheSmallestWeight); // removing node from v set, basically it means putting node to S set
+			updateV();
+		}
+	}
+
+	private void updateV() {
+		for (Integer index : v.keySet()) {
+			v.put(index, d[0][index]);
+		}
+	}
+
+	private static Integer getKeysByValue(Map<Integer, Double> map, Double value) {
+		return map.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), value)).map(Map.Entry::getKey)
+				.findFirst().get();
+	}
+
+	public void initDijkstra(T departureNode) {
+		int nodeIndex = getNode(departureNode);
+		if (nodeIndex == INDEX_NOT_FOUND) {
+			throw new IllegalArgumentException("Node does not exist");
+		}
+
+		for (int j = 0; j < getSize(); j++) {
+			nodes.get(j).setVisited(false);
+			this.d[0][j] = this.weight[nodeIndex][j];
+			this.pd[j] = EMPTY;
+
 			if (!this.edges[nodeIndex][j]) {
 				this.d[0][j] = INFINITE;
+			} else {
+				this.pd[j] = nodeIndex;
 			}
-			if (nodeIndex == j) {
-				this.d[0][nodeIndex] = INFINITE;
-			}
-
-			this.p[i][j] = EMPTY;
 		}
+
+		this.d[0][nodeIndex] = INFINITE;
+		this.pd[nodeIndex] = EMPTY;
 	}
 
 	public int[] getPD() {
@@ -56,11 +291,12 @@ public class Graph<T> {
 
 	public String printFloydPath(T departure, T arrival) throws Exception {
 		if (departure.equals(arrival)) {
-			return departure.toString();
+//			return departure.toString();
+			return "";
 		}
 		int depIndex = getNode(departure);
 		int arrIndex = getNode(arrival);
-		if (depIndex == -1 || arrIndex == -1) {
+		if (depIndex == INDEX_NOT_FOUND || arrIndex == INDEX_NOT_FOUND) {
 			throw new IllegalArgumentException("Departure and/or arrival node does not exist");
 		}
 
@@ -82,6 +318,10 @@ public class Graph<T> {
 	}
 
 	public void floyd(int An) {
+		if (An > this.size) {
+			throw new IllegalArgumentException("Size of the nodes array is smaller than " + An);
+		}
+
 		this.initsFloyd();
 
 		for (int k = 0; k < An; k++)
@@ -122,12 +362,14 @@ public class Graph<T> {
 		resetVisited();
 
 		int v = getNode(element);
+		if (v == -1) {
+			throw new IllegalArgumentException("Node does not exist!");
+		}
 		return DFPrint(v);
 	}
 
 	private void resetVisited() {
-		for (int i = 0; i < nodes.size(); i++)
-			nodes.get(i).setVisited(false);
+		nodes.stream().forEach(n -> n.setVisited(false));
 	}
 
 	private String DFPrint(int v) {
@@ -135,10 +377,8 @@ public class Graph<T> {
 		theNode.setVisited(true);
 		String aux = theNode.getElement() + "-";
 		for (int node = 0; node < nodes.size(); node++) {
-			if (edges[v][node]) {
-				if (!nodes.get(node).isVisited()) {
-					aux = aux + DFPrint(node);
-				}
+			if (edges[v][node] && !nodes.get(node).isVisited()) {
+				aux = aux + DFPrint(node);
 			}
 		}
 		return aux;
@@ -218,6 +458,8 @@ public class Graph<T> {
 				// loop (diagonal)
 				edges[nodeIndex][nodeIndex] = edges[nodes.size()][nodes.size()];
 				weight[nodeIndex][nodeIndex] = weight[nodes.size()][nodes.size()];
+			} else {
+				nodes.remove(nodeIndex);
 			}
 		}
 	}
@@ -249,7 +491,6 @@ public class Graph<T> {
 		if (existsEdge(origin, dest)) {
 			int originIndex = getNode(origin);
 			int destIndex = getNode(dest);
-
 			this.edges[originIndex][destIndex] = false;
 			this.weight[originIndex][destIndex] = 0.0;
 		} else {
