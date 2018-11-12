@@ -13,10 +13,20 @@ import java.util.List;
 public class AVLTree<T extends Comparable<T>> {
 
 	private AVLNode<T> root;
-
+	
+	public AVLNode<T> updateBF(AVLNode<T> theRoot){
+		if(theRoot.getBF() == -2) {
+			//TODO add either single or double rotation
+		} else if (theRoot.getBF() == 2){
+			//TODO add either single or double rotation
+		}
+		theRoot.updateHeight();
+		return theRoot;
+	}
+	
 	/**
 	 * Method intersects two trees and return new tree with mutual elements.
-	 * Algorithm traverse this tree with the pre-orser traversal and checks for
+	 * Algorithm traverse this tree with the pre-order traversal and checks for
 	 * mutual elements with the other tree.
 	 * 
 	 * @param otherTree an AVLTree that should be intersected with this tree.
@@ -28,6 +38,21 @@ public class AVLTree<T extends Comparable<T>> {
 		return newTree;
 	}
 
+	private List<T> getElementsFromTree(AVLTree<T> tree) {
+		ArrayList<T> elements = new ArrayList<>();
+		AVLNode<T> nodeToAdd = tree.getRoot();
+		addNodeToTheElementList(nodeToAdd, elements);
+		return elements;
+	}
+
+	private void addNodeToTheElementList(AVLNode<T> theRoot, List<T> listOfElements) {
+		if (theRoot != null) {
+			listOfElements.add(theRoot.getElement());
+			addNodeToTheElementList(theRoot.getLeft(), listOfElements);
+			addNodeToTheElementList(theRoot.getRight(), listOfElements);
+		}
+	}
+	
 	private AVLTree<T> getIntersectedTree(AVLTree<T> avlTree, List<T> elementsOfOtherTree) {
 		AVLTree<T> newTree = new AVLTree<T>();
 		addNodeToNewTree(avlTree.getRoot(), newTree, elementsOfOtherTree);
@@ -45,20 +70,7 @@ public class AVLTree<T extends Comparable<T>> {
 
 	}
 
-	private List<T> getElementsFromTree(AVLTree<T> tree) {
-		ArrayList<T> elements = new ArrayList<>();
-		AVLNode<T> nodeToAdd = tree.getRoot();
-		addNodeToTheElementList(nodeToAdd, elements);
-		return elements;
-	}
-
-	private void addNodeToTheElementList(AVLNode<T> theRoot, List<T> listOfElements) {
-		if (theRoot != null) {
-			listOfElements.add(theRoot.getElement());
-			addNodeToTheElementList(theRoot.getLeft(), listOfElements);
-			addNodeToTheElementList(theRoot.getRight(), listOfElements);
-		}
-	}
+	
 
 	/**
 	 * Joins to trees together. Uses preorder traversal when adding nodes from the
@@ -67,7 +79,7 @@ public class AVLTree<T extends Comparable<T>> {
 	 * @param treeToJoin an AVLTree we want to join this tree
 	 * @return new tree formed of this tree and treeToJoin
 	 */
-	public AVLTree<T> join(AVLTree<T> treeToJoin) {
+	public AVLTree<T> joins(AVLTree<T> treeToJoin) {
 		AVLTree<T> newTree = new AVLTree<T>();
 		List<AVLNode<T>> listOfNodesToAdd = new ArrayList<AVLNode<T>>();
 		addNodesFromTreeToTheList(this, listOfNodesToAdd);
@@ -203,8 +215,12 @@ public class AVLTree<T extends Comparable<T>> {
 			}
 		}
 	}
+	
+	public AVLNode<T> remove(T element){
+		return remove(getRoot(), element);
+	}
 
-	public AVLNode<T> remove(AVLNode<T> theRoot, T element) {
+	private AVLNode<T> remove(AVLNode<T> theRoot, T element) {
 		if (theRoot == null)
 			throw new RuntimeException("element does not exist!");
 		else if (element.compareTo(theRoot.getElement()) < 0)
@@ -223,6 +239,7 @@ public class AVLTree<T extends Comparable<T>> {
 				theRoot.setLeft(remove(theRoot.getLeft(), theRoot.getElement()));
 			}
 		}
+//		return (updateBF (theRoot));
 		theRoot.updateHeight();
 		return theRoot;
 	}
@@ -311,6 +328,7 @@ public class AVLTree<T extends Comparable<T>> {
 			theRoot.setRight(add(theRoot.getRight(), element));
 		}
 
+//		return (updateBF (theRoot));
 		theRoot.updateHeight();
 		return theRoot;
 	}

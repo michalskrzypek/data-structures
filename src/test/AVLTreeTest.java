@@ -1,6 +1,8 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -10,6 +12,7 @@ public class AVLTreeTest {
 
 	@Test
 	public void test() {
+		//this is new branch
 /*		AVLTree<Character> a = new AVLTree<Character>();
 		a.add('b');
 		assertEquals("b--", a.toString());
@@ -74,12 +77,12 @@ public class AVLTreeTest {
 		b.add(11);
 		assertEquals("643--5--1298--11--15--", b.toString());
 		
-		b.remove(b.getRoot(), 15);
+		b.remove(15);
 		assertEquals("643--5--1298--11---", b.toString());
 		
-		b.remove(b.getRoot(), 12);
-		assertEquals("643--5--98--11--", b.toString());
-		*/
+		b.remove(12);
+		assertEquals("643--5--98--11--", b.toString());*/
+		
 
 		System.out.println("-------------------TREE PRE-ORDER TEST-----------------");
 		
@@ -91,6 +94,7 @@ public class AVLTreeTest {
 		c.add('g');
 		c.add('i');
 		c.add('h');
+		System.out.println("-------------------PASSED-----------------");
 
 		assertEquals("b(4)a(0)--d(3)c(0)--g(2)-i(1)h(0)---", c.toString());
 		
@@ -104,7 +108,8 @@ public class AVLTreeTest {
 		e.add('g');
 		e.add('i');
 		e.add('d');
-		assertEquals("b(3)a(0)--d(2)c(0)--g(1)-i(0)--", d.join(e).toString());
+		assertEquals("b(3)a(0)--d(2)c(0)--g(1)-i(0)--", d.joins(e).toString());
+		System.out.println("-------------------PASSED-----------------");
 		
 		System.out.println("-------------------TREE INTERSECTION TEST -----------------");	
 		AVLTree<Character> f = new AVLTree<Character>();
@@ -116,7 +121,20 @@ public class AVLTreeTest {
 		g.add('g');
 		g.add('i');
 		g.add('d');
-		assertEquals("d(0)--", f.intersection(g).toString());
+		g.add('a');
+		assertEquals("a(1)-d(0)--", f.intersection(g).toString());
+		System.out.println("-------------------PASSED-----------------");
+		
+/*		System.out.println("-------------------TREE BF TEST -----------------");
+		AVLTree<Character> h = new AVLTree<Character>();
+		h.add('b');
+		h.add('a');
+		h.add('d');
+		h.add('c');
+		h.add('g');
+		h.add('i');
+		h.add('h');
+		assertEquals("b(3)a(0)--d(2)c(0)--g(2)-i(-1)h(0)---", h.toString());*/
 	}
 	
 }
