@@ -216,8 +216,8 @@ public class AVLTree<T extends Comparable<T>> {
 		}
 	}
 	
-	public AVLNode<T> remove(T element){
-		return remove(getRoot(), element);
+	public void remove(T element){
+		setRoot(remove(getRoot(), element));
 	}
 
 	private AVLNode<T> remove(AVLNode<T> theRoot, T element) {
