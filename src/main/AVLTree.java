@@ -13,17 +13,14 @@ import java.util.List;
 public class AVLTree<T extends Comparable<T>> {
 
 	private AVLNode<T> root;
-	
-	public AVLNode<T> updateBF(AVLNode<T> theRoot){
-		if(theRoot.getBF() == -2) {
-			//TODO add either single or double rotation
-		} else if (theRoot.getBF() == 2){
-			//TODO add either single or double rotation
-		}
-		theRoot.updateHeight();
-		return theRoot;
-	}
-	
+
+	/*
+	 * public AVLNode<T> updateBF(AVLNode<T> theRoot){ if(theRoot.getBF() == -2) {
+	 * //TODO add either single or double rotation } else if (theRoot.getBF() == 2){
+	 * //TODO add either single or double rotation } theRoot.updateHeight(); return
+	 * theRoot; }
+	 */
+
 	/**
 	 * Method intersects two trees and return new tree with mutual elements.
 	 * Algorithm traverse this tree with the pre-order traversal and checks for
@@ -52,7 +49,7 @@ public class AVLTree<T extends Comparable<T>> {
 			addNodeToTheElementList(theRoot.getRight(), listOfElements);
 		}
 	}
-	
+
 	private AVLTree<T> getIntersectedTree(AVLTree<T> avlTree, List<T> elementsOfOtherTree) {
 		AVLTree<T> newTree = new AVLTree<T>();
 		addNodeToNewTree(avlTree.getRoot(), newTree, elementsOfOtherTree);
@@ -69,8 +66,6 @@ public class AVLTree<T extends Comparable<T>> {
 		}
 
 	}
-
-	
 
 	/**
 	 * Joins to trees together. Uses preorder traversal when adding nodes from the
@@ -96,8 +91,10 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	private void addNodesToTheList(List<AVLNode<T>> listOfNodes, AVLNode<T> theRoot) {
-		if (theRoot != null && !listConatinsNode(listOfNodes, theRoot)) {
-			listOfNodes.add(theRoot);
+		if (theRoot != null) {
+			if (!listConatinsNode(listOfNodes, theRoot)) {
+				listOfNodes.add(theRoot);
+			}
 			addNodesToTheList(listOfNodes, theRoot.getLeft());
 			addNodesToTheList(listOfNodes, theRoot.getRight());
 		}
@@ -215,8 +212,8 @@ public class AVLTree<T extends Comparable<T>> {
 			}
 		}
 	}
-	
-	public void remove(T element){
+
+	public void remove(T element) {
 		setRoot(remove(getRoot(), element));
 	}
 
