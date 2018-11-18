@@ -25,7 +25,6 @@ public class L6_Dijkstra_sampleTest {
 		} catch (Exception e) {
 			System.out.println("No repeated nodes are allowed" + e);
 		}
-
 		assertEquals(6, g.getSize());
 		assertEquals(0, g.getNode("V1"));
 		assertEquals(1, g.getNode("V2"));

@@ -14,12 +14,68 @@ public class AVLTree<T extends Comparable<T>> {
 
 	private AVLNode<T> root;
 
-	/*
-	 * public AVLNode<T> updateBF(AVLNode<T> theRoot){ if(theRoot.getBF() == -2) {
-	 * //TODO add either single or double rotation } else if (theRoot.getBF() == 2){
-	 * //TODO add either single or double rotation } theRoot.updateHeight(); return
-	 * theRoot; }
-	 */
+	public AVLNode<T> updateBF(AVLNode<T> theRoot) {
+		if (theRoot.getBF() == -2) {// left rotation
+			if (theRoot.getLeft().getBF() > 0) {
+				theRoot = doubleLeftRotation(theRoot);
+			} else {
+				theRoot = singleLeftRotation(theRoot);
+			}
+		} else if (theRoot.getBF() == 2) {// right rotation
+			if (theRoot.getRight().getBF() < 0) {
+				theRoot = doubleRightRotation(theRoot);
+			} else {
+				theRoot = singleRightRotation(theRoot);
+			}
+		}
+		theRoot.updateHeight();
+		return theRoot;
+	}
+
+	private AVLNode<T> singleLeftRotation(AVLNode<T> b) {
+		AVLNode<T> left = b.getLeft();
+		AVLNode<T> rightChildOfLeft = b.getLeft().getRight();
+		left.setRight(b);
+		b.setLeft(rightChildOfLeft);
+		return left;
+	}
+
+	private AVLNode<T> singleRightRotation(AVLNode<T> b) {
+		AVLNode<T> right = b.getRight();
+		AVLNode<T> leftChildOfRight = b.getRight().getLeft();
+
+		right.setLeft(b);
+		b.setRight(leftChildOfRight);
+		return right;
+	}
+
+	private AVLNode<T> doubleLeftRotation(AVLNode<T> b) {
+		AVLNode<T> left = b.getLeft();
+		AVLNode<T> rightChildOfLeft = b.getLeft().getRight();
+		AVLNode<T> ii = b.getLeft().getRight().getLeft();
+		AVLNode<T> iii = b.getLeft().getRight().getRight();
+
+		rightChildOfLeft.setLeft(b);
+		rightChildOfLeft.setRight(left);
+		left.setRight(ii);
+		b.setLeft(iii);
+
+		return rightChildOfLeft;
+	}
+
+	private AVLNode<T> doubleRightRotation(AVLNode<T> b) {
+		AVLNode<T> right = b.getRight();
+		AVLNode<T> leftChildOfright = b.getRight().getLeft();
+		AVLNode<T> ii = b.getRight().getLeft().getRight();
+		AVLNode<T> iii = b.getRight().getLeft().getLeft();
+
+		leftChildOfright.setLeft(b);
+		leftChildOfright.setRight(right);
+		right.setLeft(ii);
+		b.setRight(iii);
+
+		return leftChildOfright;
+	}
 
 	/**
 	 * Method intersects two trees and return new tree with mutual elements.
@@ -68,7 +124,7 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Joins to trees together. Uses preorder traversal when adding nodes from the
+	 * Joins two trees together. Uses preorder traversal when adding nodes from the
 	 * other tree.
 	 * 
 	 * @param treeToJoin an AVLTree we want to join this tree
@@ -236,9 +292,9 @@ public class AVLTree<T extends Comparable<T>> {
 				theRoot.setLeft(remove(theRoot.getLeft(), theRoot.getElement()));
 			}
 		}
-//		return (updateBF (theRoot));
-		theRoot.updateHeight();
-		return theRoot;
+		return (updateBF(theRoot));
+//		theRoot.updateHeight();
+//		return theRoot;
 	}
 
 	/**
@@ -325,9 +381,9 @@ public class AVLTree<T extends Comparable<T>> {
 			theRoot.setRight(add(theRoot.getRight(), element));
 		}
 
-//		return (updateBF (theRoot));
-		theRoot.updateHeight();
-		return theRoot;
+		return (updateBF(theRoot));
+//		theRoot.updateHeight();
+//		return theRoot;
 	}
 
 	/**
