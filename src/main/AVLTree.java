@@ -13,7 +13,41 @@ import java.util.List;
 public class AVLTree<T extends Comparable<T>> {
 
 	private AVLNode<T> root;
+	private int height;
 
+	/**
+	 * Get the height of the tree starting in the root node.
+	 * @return an integer representing the height of the tree.
+	 */
+	public int getHeight() {
+		height = calculateHeight(getRoot());
+		return height;
+	}
+	
+	/**
+	 * Recursive algorithm for calculating the height of the tree.
+	 * @param root every next node in the recursion
+	 * @return height of the root node.
+	 */
+	private int calculateHeight(AVLNode<T> root) {
+		if(root == null) {
+			return 0;
+		} else if (root.getLeft() == null && root.getRight() == null) {
+			return 1;
+		} else if(root.getLeft() == null){
+			return 1 + calculateHeight(root.getRight()); 
+		} else if(root.getRight() == null) {
+			return 1 + calculateHeight(root.getLeft()); 
+		} else {
+			return 1 +(Math.max(calculateHeight(root.getLeft()), calculateHeight(root.getRight())));
+		}
+	}
+	
+	/**
+	 * Reorganizes the tree if the balance factor at any node is incorrect.
+	 * @param theRoot the node the algorithm is applied to.
+	 * @return the node with updated height.
+	 */
 	public AVLNode<T> updateBF(AVLNode<T> theRoot) {
 		if (theRoot.getBF() == -2) {// left rotation
 			if (theRoot.getLeft().getBF() > 0) {
@@ -32,23 +66,39 @@ public class AVLTree<T extends Comparable<T>> {
 		return theRoot;
 	}
 
+	/**
+	 * Performs single left rotation on a tree with the given node. 
+	 * @param the node with the incorrect BF
+	 * @return an updated node.
+	 */
 	private AVLNode<T> singleLeftRotation(AVLNode<T> b) {
 		AVLNode<T> left = b.getLeft();
 		AVLNode<T> rightChildOfLeft = b.getLeft().getRight();
 		left.setRight(b);
 		b.setLeft(rightChildOfLeft);
+		b.updateHeight();
 		return left;
 	}
 
+	/**
+	 * Performs single right rotation on a tree with the given node. 
+	 * @param the node with the incorrect BF
+	 * @return an updated node
+	 */
 	private AVLNode<T> singleRightRotation(AVLNode<T> b) {
 		AVLNode<T> right = b.getRight();
 		AVLNode<T> leftChildOfRight = b.getRight().getLeft();
-
 		right.setLeft(b);
 		b.setRight(leftChildOfRight);
+		b.updateHeight();
 		return right;
 	}
 
+	/**
+	 * Performs single left rotation on a tree with the given node. 
+	 * @param b
+	 * @return
+	 */
 	private AVLNode<T> doubleLeftRotation(AVLNode<T> b) {
 		AVLNode<T> left = b.getLeft();
 		AVLNode<T> rightChildOfLeft = b.getLeft().getRight();
@@ -60,9 +110,17 @@ public class AVLTree<T extends Comparable<T>> {
 		left.setRight(ii);
 		b.setLeft(iii);
 
+		b.updateHeight();
+		left.updateHeight();
+		
 		return rightChildOfLeft;
 	}
 
+	/**
+	 * Performs single left rotation on a tree with the given node. 
+	 * @param b
+	 * @return
+	 */
 	private AVLNode<T> doubleRightRotation(AVLNode<T> b) {
 		AVLNode<T> right = b.getRight();
 		AVLNode<T> leftChildOfright = b.getRight().getLeft();
@@ -73,7 +131,10 @@ public class AVLTree<T extends Comparable<T>> {
 		leftChildOfright.setRight(right);
 		right.setLeft(ii);
 		b.setRight(iii);
-
+		
+		b.updateHeight();
+		right.updateHeight();
+		
 		return leftChildOfright;
 	}
 
@@ -382,8 +443,6 @@ public class AVLTree<T extends Comparable<T>> {
 		}
 
 		return (updateBF(theRoot));
-//		theRoot.updateHeight();
-//		return theRoot;
 	}
 
 	/**

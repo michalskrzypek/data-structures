@@ -41,11 +41,11 @@ public class AVLNode<T> {
 		int rightHeight = -1;
 		int leftHeight = -1;
 		if(right != null) {
-			right.updateHeight();
+//			right.updateHeight();
 			rightHeight = right.getHeight();
 		}
 		if(left != null) {
-			left.updateHeight();
+//			left.updateHeight();
 			leftHeight = left.getHeight();
 		}
 		return rightHeight - leftHeight;
@@ -86,11 +86,11 @@ public class AVLNode<T> {
 	public String toString() {
 		return this.getElement().toString() + "(" + getBF() + ")";
 	}
-	/*@Override
+/*	@Override
 	public String toString() {
-		return this.getElement().toString() + "(" + getBF() + ")";
-	}*/
-
+		return this.getElement().toString() + "(" + getHeight() + ")";
+	}
+*/
 	/**
 	 * Gets element of a node
 	 * 
