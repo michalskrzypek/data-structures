@@ -12,8 +12,8 @@ public class AVLTreeTest {
 
 	@Test
 	public void test() {
-		//this is new branch
-/*		AVLTree<Character> a = new AVLTree<Character>();
+/*		//this is new branch
+		AVLTree<Character> a = new AVLTree<Character>();
 		a.add('b');
 		assertEquals("b--", a.toString());
 		assertEquals("-b-", a.inOrderTraversal());
@@ -81,7 +81,7 @@ public class AVLTreeTest {
 		assertEquals("643--5--1298--11---", b.toString());
 		
 		b.remove(12);
-		assertEquals("643--5--98--11--", b.toString());*/
+		assertEquals("643--5--98--11--", b.toString());
 		
 
 		System.out.println("-------------------TREE PRE-ORDER TEST-----------------");
@@ -124,7 +124,7 @@ public class AVLTreeTest {
 		g.add('a');
 		assertEquals("a(1)-d(0)--", f.intersection(g).toString());
 		System.out.println("-------------------PASSED-----------------");
-		
+		*/
 /*		System.out.println("-------------------TREE BF TEST -----------------");
 		AVLTree<Character> h = new AVLTree<Character>();
 		h.add('b');
@@ -135,6 +135,43 @@ public class AVLTreeTest {
 		h.add('i');
 		h.add('h');
 		assertEquals("b(3)a(0)--d(2)c(0)--g(2)-i(-1)h(0)---", h.toString());*/
+
+/*		AVLTree<Integer> b = new AVLTree<Integer>();
+		b.add(14);
+		b.add(26);
+		b.add(59);
+		b.add(48);
+		b.add(63);
+		b.add(55);
+		b.add(89);
+		b.add(11);
+		b.add(72);
+		b.add(19);
+		System.out.println(b.toString());
+*/
+		AVLTree<Integer> b = new AVLTree<Integer>();
+		b.add(48);
+		b.add(26);
+		b.add(84);
+		b.add(14);
+		b.add(39);
+		b.add(56);
+		b.add(87);
+		b.add(12);
+		b.add(31);
+		b.add(46);
+		b.add(53);
+		b.add(74);
+		b.add(95);
+		b.add(33);
+		b.add(65);
+		b.add(81);
+		System.out.println(b.toString());
+		
+		b.remove(48);
+		System.out.println(b.toString());
+	
 	}
+	
 	
 }
