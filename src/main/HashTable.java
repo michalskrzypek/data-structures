@@ -6,14 +6,22 @@ import java.util.ArrayList;
 // third constant double hashing, constructor set R to prev prime number of B
 // implement getter for associative array
 // logic implemented in the method dynamicResizewith parameter
+/**
+ * Class representing a dictionary type data structure - a hash table
+ * 
+ * @author Michal Skrzypek
+ *
+ * @param <T> element stored in the hash node
+ */
 public class HashTable<T> {
 
 	public final static int LINEAR_PROBING = 0;
 	public final static int QUADRATIC_PROBING = 1;
 	public final static int DOUBLE_HASHING = 2;
-	/*public final static double LOWER_THRESHOLD = 0.16d;
-	public final static double UPPER_THRESHOLD = 0.5d;
-*/
+	/*
+	 * public final static double LOWER_THRESHOLD = 0.16d; public final static
+	 * double UPPER_THRESHOLD = 0.5d;
+	 */
 	private int n = 0;
 	private int R = 5;
 	private int B = 7;
@@ -81,8 +89,8 @@ public class HashTable<T> {
 			} else if (associativeArray.get(slot).getStatus() == HashNode.EMPTY) {
 				throw new RuntimeException("Element: " + element + " does not exist in the hash table");
 			} else {
+				i++;
 			}
-			i++;
 		}
 	}
 
@@ -92,10 +100,6 @@ public class HashTable<T> {
 	 * @param element the element in the node to be added
 	 */
 	public void add(T element) {
-
-		if (this.getLF() > this.minLF || this.getLF() > 1) {
-			dynamicResizing();
-		}
 
 		int i = 0;
 		while (i < B) {
@@ -110,35 +114,55 @@ public class HashTable<T> {
 				i++;
 			}
 		}
+
+		if (this.getLF() > this.minLF) {
+			dynamicResizing();
+		}
 	}
 
 	/**
 	 * Algorithm for resizing the hash table once the LF is above the upper bound
 	 */
 	public void dynamicResizing() {
-		setB(getNextPrimeNumber(this.B * 2));
+		int newSize = getNextPrimeNumber(this.B * 2);
+		dynamicResizing(newSize);
+	}
 
-		ArrayList<HashNode<T>> newAssociativeArray = new ArrayList<HashNode<T>>(B);
-		newAssociativeArray = new ArrayList<HashNode<T>>(B);
-		for (int i = 0; i < B; i++) {
-			newAssociativeArray.add(new HashNode<T>());
-		}
 
-		for (HashNode<T> node : associativeArray) {
-			int i = 0;
-			while (true) {
-				int slot = f(node.getElement(), i);
-				if (newAssociativeArray.get(slot).getStatus() == HashNode.EMPTY
-						|| newAssociativeArray.get(slot).getStatus() == HashNode.DELETED) {
-					newAssociativeArray.get(slot).setElement(node.getElement());
-					newAssociativeArray.get(slot).setStatus(HashNode.VALID);
-					break;
-				} else {
-					i++;
+	private void dynamicResizing(int newSize) {
+		ArrayList<HashNode<T>> newAssociativeArray = initializeArray(newSize);
+		setB(newSize);
+		this.R = getPrevPrimeNumber(newSize);
+		this.n = 0;
+		
+		for (int i = 0; i < associativeArray.size(); i++) {
+			T element = associativeArray.get(i).getElement();
+			if (element != null) {
+				int j = 0;
+				while (j < newSize) {
+					int slot = f(element, j);
+					if (newAssociativeArray.get(slot).getStatus() == HashNode.EMPTY) {
+						newAssociativeArray.get(slot).setElement(element);
+						newAssociativeArray.get(slot).setStatus(HashNode.VALID);
+						n++;
+						break;
+					} else {
+						j++;
+					}
 				}
 			}
 		}
+		
 		this.associativeArray = newAssociativeArray;
+	}
+	
+
+	private ArrayList<HashNode<T>> initializeArray(int size) {
+		ArrayList<HashNode<T>> newAssociativeArray = new ArrayList<HashNode<T>>(size);
+		for (int i = 0; i < size; i++) {
+			newAssociativeArray.add(new HashNode<T>());
+		}
+		return newAssociativeArray;
 	}
 
 	/**
@@ -151,7 +175,7 @@ public class HashTable<T> {
 	public boolean search(T element) {
 		boolean found = false;
 		int i = 0;
-		while (i < this.B) {
+		while (i < B) {
 			int slot = f(element, i);
 			if (associativeArray.get(slot).getStatus() == HashNode.VALID
 					&& associativeArray.get(slot).getElement().equals(element)) {
@@ -165,6 +189,7 @@ public class HashTable<T> {
 		}
 		return found;
 	}
+//f(x) = (x + i*(R - x%R)) % B
 
 	/**
 	 * Hashing function for storing elements in the hash table
@@ -179,6 +204,8 @@ public class HashTable<T> {
 			return (element.hashCode() + i) % B;
 		case QUADRATIC_PROBING:
 			return (int) (element.hashCode() + Math.pow(i, 2)) % B;
+		case DOUBLE_HASHING:
+			return (int) ((element.hashCode() + i * (R - (element.hashCode() % R))) % B);
 		default:
 			throw new RuntimeException("Wrong open addressing method applied!");
 		}
@@ -235,7 +262,7 @@ public class HashTable<T> {
 	 * @return the first prime number below n
 	 */
 	public int getPrevPrimeNumber(int n) {
-		int result = -1;
+		int result = 2;
 		for (int i = n - 1; i > 0; i--) {
 			if (isPrime(i)) {
 				return i;
@@ -248,7 +275,7 @@ public class HashTable<T> {
 	 * Checks whether the number is prime
 	 * 
 	 * @param n number to check
-	 * @return a boolean value
+	 * @return a boolean value (true if prime)
 	 */
 	public boolean isPrime(int n) {
 		int i = 2;
@@ -259,6 +286,10 @@ public class HashTable<T> {
 			i++;
 		}
 		return true;
+	}
+
+	public ArrayList<HashNode<T>> getAssociativeArray() {
+		return associativeArray;
 	}
 
 	/*

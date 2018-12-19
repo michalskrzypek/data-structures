@@ -7,7 +7,7 @@ import java.util.Collections;
 /**
  * Class representing Priority Queue as a Binary Heap
  * 
- * @author mskrz
+ * @author Michal Skrzypek
  *
  * @param <T> element in a heap node
  */
@@ -106,7 +106,7 @@ public class BinaryHeap<T extends Comparable<T>> {
 			Collections.swap(heap, pos, fatherPos);
 			pos = fatherPos;
 
-			if (pos - 1 < 0) {
+			if (pos == 0) {
 				break;
 			}
 
@@ -133,18 +133,17 @@ public class BinaryHeap<T extends Comparable<T>> {
 		T element;
 		T father;
 		int fatherPos = (pos - 1) / 2;
-		while (fatherPos >= 0) {
+		while (true) {
 			element = heap.get(pos);
 			father = heap.get(fatherPos);
 			if (element.compareTo(father) < 0) {
 				Collections.swap(heap, pos, fatherPos);
 				pos = fatherPos;
-
-				if (pos - 1 < 0) {
+				if (pos == 0) {
 					break;
+				} else {
+					fatherPos = (pos - 1) / 2;
 				}
-
-				fatherPos = (pos - 1) / 2;
 			} else {
 				break;
 			}
