@@ -5,11 +5,95 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import main.AVLTree;
 import main.HashTable;
 
+/**
+ * Custom test case for hash tables.
+ * @author mskrz
+ *
+ */
 public class HashTablesTest {
-
+	
 	@Test
+	public void testAVLToHashTable() {
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		AVLTree<Integer> b = new AVLTree<Integer>();
+		b.add(6);
+		b.add(4);
+		a.addTree(b);
+		assertEquals(0.4, a.getLF(), 0.1);
+		assertEquals("[0] (0) = null - [1] (1) = 6 - [2] (0) = null - [3] (0) = null - [4] (1) = 4 - ",  a.toString());
+	}
+	
+	@Test
+	public void testAVLToHashTable2() {
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		AVLTree<Integer> b = new AVLTree<Integer>();
+		b.add(6);
+		b.add(4);
+		b.add(3);
+		b.add(5);
+		a.addTree(b);
+
+		assertEquals(0.36, a.getLF(), 0.01);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (0) = null - [3] (1) = 3 - [4] (1) = 4 - [5] (1) = 5 - [6] (1) = 6 - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ",  a.toString());
+	}
+	
+	@Test
+	public void testAVLToHashTable3() {
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		AVLTree<Integer> b = new AVLTree<Integer>();
+		b.add(6);
+		b.add(4);
+		b.add(3);
+		b.add(5);
+		b.add(12);
+		a.addTree(b);
+		
+		assertEquals(0.45, a.getLF(), 0.01);
+		assertEquals("[0] (0) = null - [1] (1) = 12 - [2] (0) = null - [3] (1) = 3 - [4] (1) = 4 - [5] (1) = 5 - [6] (1) = 6 - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ",  a.toString());
+
+		a.remove(3);
+		assertEquals("[0] (0) = null - [1] (1) = 12 - [2] (0) = null - [3] (2) = 3 - [4] (1) = 4 - [5] (1) = 5 - [6] (1) = 6 - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ",  a.toString());
+		a.remove(4);
+		a.remove(6);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (0) = null - [3] (0) = null - [4] (0) = null - [5] (1) = 12 - [6] (1) = 5 - ",  a.toString());
+	}
+	
+	@Test
+	public void testConstructorAndJoin() {
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		a.add(4);
+		a.add(13);
+		assertEquals(0.4, a.getLF(), 0.1);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (0) = null - [3] (1) = 13 - [4] (1) = 4 - ",  a.toString());
+		
+		HashTable<Integer> b = new HashTable<Integer>(a);
+		assertEquals(0.4, b.getLF(), 0.1);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (0) = null - [3] (1) = 13 - [4] (1) = 4 - ",  b.toString());
+		b.add(24);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (0) = null - [3] (1) = 13 - [4] (1) = 4 - ",  a.toString());
+		assertEquals(0.27, b.getLF(), 0.01);
+		
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (1) = 24 - [3] (1) = 13 - [4] (1) = 4 - [5] (0) = null - [6] (0) = null - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ",  a.join(b).toString());
+	}
+	
+	@Test
+	public void testJoin() {
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		a.add(4);
+		a.add(13);
+		
+		HashTable<Integer> b = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		b.add(24);
+		b.add(3);
+		
+		assertEquals(0.36, a.join(b).getLF(), 0.01);
+		assertEquals("[0] (0) = null - [1] (0) = null - [2] (1) = 13 - [3] (1) = 3 - [4] (1) = 4 - [5] (1) = 24 - [6] (0) = null - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ", a.join(b).toString());
+	}
+
+/*	@Test
 	public void testAll() {
 		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
 		assertEquals(2,  a.f(7,0));
@@ -67,7 +151,7 @@ public class HashTablesTest {
 		assertEquals(0,  c.f('a',4));
 	}
 
-/*	@Test
+	@Test
 	public void testToString() {
 		HashTable<Character> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
 		a.add(4);
@@ -78,7 +162,7 @@ public class HashTablesTest {
 		assertEquals("[0] (1) = 24 - [1] (1) = 3 - [2] (0) = null - [3] (1) = 13 - [4] (1) = 4 - ",  a.toString());
 		assertTrue(a.search(3));
 		assertFalse(a.search(12));
-	}*/
+	}
 	
 	@Test
 	public void testAdd() {
@@ -93,7 +177,7 @@ public class HashTablesTest {
 		
 		assertEquals(0.27,  a.getLF(), 0.1);
 		assertEquals("[0] (0) = null - [1] (0) = null - [2] (1) = 24 - [3] (1) = 13 - [4] (1) = 4 - [5] (0) = null - [6] (0) = null - [7] (0) = null - [8] (0) = null - [9] (0) = null - [10] (0) = null - ", a.toString());
-		/*
+		
 		a.add(3);
 		
 		assertEquals("[0] (1) = 24 - [1] (1) = 3 - [2] (0) = null - [3] (1) = 13 - [4] (1) = 4 - ", a.toString());
@@ -126,7 +210,7 @@ public class HashTablesTest {
 		
 		assertEquals(true, c.search(3));
 		c.remove(13);
-		assertEquals(true, c.search(3));*/
+		assertEquals(true, c.search(3));
 	}
 	
 	@Test
@@ -191,6 +275,6 @@ public class HashTablesTest {
 	        assertEquals(3, a.getPrevPrimeNumber(5));
 	        assertEquals(3, a.getPrevPrimeNumber(4));
 	        assertEquals(2, a.getPrevPrimeNumber(3));
-	    }
+	    }*/
 	
 }

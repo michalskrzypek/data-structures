@@ -97,7 +97,7 @@ public class AVLNode<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Prints a representation of a node
+	 * Prints a representation of a node. Provides its element and Balance Factor
 	 */
 	public void print() {
 		System.out.println(this.toString());

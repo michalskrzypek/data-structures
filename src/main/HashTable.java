@@ -13,21 +13,56 @@ import java.util.ArrayList;
  *
  * @param <T> element stored in the hash node
  */
-public class HashTable<T> {
+public class HashTable<T extends Comparable<T>> {
 
+	/**
+	 * Open addressing collision policy - linear probing.
+	 */
 	public final static int LINEAR_PROBING = 0;
+	/**
+	 * Open addressing collision policy - quadratic probing.
+	 */
 	public final static int QUADRATIC_PROBING = 1;
+	/**
+	 * Open addressing collision policy - double hashing.
+	 */
 	public final static int DOUBLE_HASHING = 2;
+
 	/*
 	 * public final static double LOWER_THRESHOLD = 0.16d; public final static
 	 * double UPPER_THRESHOLD = 0.5d;
 	 */
+	/**
+	 * Number of valid nodes inside hash table.
+	 */
 	private int n = 0;
+	/**
+	 * Prime number right before B.
+	 */
 	private int R = 5;
+	/**
+	 * Prime number representing the size of the hash table.
+	 */
 	private int B = 7;
+	/**
+	 * Current open addressing collision policy of the hash table.
+	 */
 	private int redispersionType = LINEAR_PROBING;
+	/**
+	 * Maximum Load Factor. Once surpassed, the hash table needs to be resized
+	 * dynamically.
+	 */
 	private double minLF = 0.5;
 
+	/**
+	 * Minimum Load Factor. Once the LF get below this level, the hash table needs
+	 * to be resized inversally.
+	 */
+	private double maxLF = 0.2d;
+
+	/**
+	 * List containing hash nodes of the hash table.
+	 */
 	private ArrayList<HashNode<T>> associativeArray;
 
 	/**
@@ -51,7 +86,97 @@ public class HashTable<T> {
 	}
 
 	/**
-	 * Returns the Load Factor of the hash table
+	 * Constructor initializing new hash table out of the existing one.
+	 * 
+	 * @param other a hash table to be cloned.
+	 */
+	public HashTable(HashTable<T> other) {
+		this.B = other.B;
+		this.R = getPrevPrimeNumber(this.B);
+		this.redispersionType = other.redispersionType;
+		this.minLF = other.minLF;
+		this.n = other.n;
+
+		associativeArray = new ArrayList<HashNode<T>>(B);
+		for (int i = 0; i < B; i++) {
+			associativeArray.add(new HashNode<>(other.getAssociativeArray().get(i)));
+		}
+	}
+	
+/*	private ArrayList<AVLTree<T>> associativeArray;
+	public HashTable(int B) {
+	this.B = B;
+	associativeArray = new ArrayList<AVLTree<T>>(B);
+	for (int i=0; i<associativeArray.size(); i++)
+	associativeArray.add(new AVLTree<T>());	
+	}
+	public void add (T a){
+if (!find(a))
+associativeArray.get(f(a.hashCode())).add(a);
+}
+	*/
+
+	public HashTable<T> join(HashTable<T> other) {
+		HashTable<T> joinedTable = new HashTable<T>(this);
+
+		for (int i = 0; i < other.getAssociativeArray().size(); i++) {
+			HashNode<T> node = other.associativeArray.get(i);
+			if (node.getStatus() == HashNode.VALID && node.getElement() != null
+					&& !joinedTable.hasElement(node.getElement())) {
+				joinedTable.add(node.getElement());
+			}
+		}
+		return joinedTable;
+	}
+
+	private boolean hasElement(T element) {
+		for (HashNode<T> node : associativeArray) {
+
+			if (node.getElement() != null && node.getElement().equals(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * private ArrayList<HashNode<T>> copyAssociativeArray() {
+	 * ArrayList<HashNode<T>> copiedArray = new
+	 * ArrayList<HashNode<T>>(this.associativeArray.size()); for (int i = 0; i <
+	 * this.associativeArray.size(); i++) {
+	 * copiedArray.add(associativeArray.get(i)); } return copiedArray; }
+	 */
+
+	/**
+	 * Sets new list containing hash nodes.
+	 * 
+	 * @param a list to be set as an associative array.
+	 */
+	private void setAssociativeArray(ArrayList<HashNode<T>> a) {
+		this.associativeArray = a;
+	}
+
+	/**
+	 * Returns R parameter of the hash table.
+	 * 
+	 * @return the R parameter as a prime number before B
+	 */
+	public int getR() {
+		return R;
+	}
+
+	/**
+	 * Sets R parameter of the hash table.
+	 * 
+	 * @param the R parameter as a prime number before B
+	 */
+	public void setR(int r) {
+		R = r;
+	}
+
+	/**
+	 * Returns the Load Factor of the hash table. It is calculated as the number of
+	 * elements in the hash table divided by its size.
 	 * 
 	 * @return a double indicating the Load Factor
 	 */
@@ -60,7 +185,7 @@ public class HashTable<T> {
 	}
 
 	/**
-	 * Gets the number of nodes in the hash table
+	 * Gets the number of valid nodes in the hash table
 	 * 
 	 * @return a number indicating the number of nodes in the hash table
 	 */
@@ -85,11 +210,48 @@ public class HashTable<T> {
 					&& associativeArray.get(slot).getElement().equals(element)) {
 				associativeArray.get(slot).setStatus(HashNode.DELETED);
 				n--;
-				return;
+				break;
 			} else if (associativeArray.get(slot).getStatus() == HashNode.EMPTY) {
 				throw new RuntimeException("Element: " + element + " does not exist in the hash table");
 			} else {
 				i++;
+			}
+		}
+
+		if (getLF() < maxLF) {
+			inverseResizing();
+		}
+	}
+
+	/**
+	 * Adding elements from the AVL tree to the hash table according to the in order
+	 * traversal
+	 * 
+	 * @param tree AVL Tree to be added to the hash table
+	 */
+	public void addTree(AVLTree<T> tree) {
+		if (tree == null) {
+			throw new RuntimeException("Tree can not be null");
+		}
+		addTree(tree.getRoot());
+	}
+
+	/**
+	 * Recursively adding nodes to the hash table according to the in order
+	 * traversal
+	 * 
+	 * @param node AVLNode to be added to the hash table
+	 */
+	private void addTree(AVLNode<T> node) {
+		if (node != null) {
+			add(node.getElement());
+
+			if (node.getLeft() != null) {
+				addTree(node.getLeft());
+			}
+
+			if (node.getRight() != null) {
+				addTree(node.getRight());
 			}
 		}
 	}
@@ -120,21 +282,60 @@ public class HashTable<T> {
 		}
 	}
 
+	public void inverseResizing() {
+		int newSize = getNextPrimeNumber(B / 2);
+		inverseResizing(newSize);
+	}
+
+	private void inverseResizing(int newSize) {
+		ArrayList<HashNode<T>> newAssociativeArray = initializeArray(newSize);
+		setB(newSize);
+		this.R = getPrevPrimeNumber(newSize);
+		this.n = 0;
+
+		for (int i = 0; i < associativeArray.size(); i++) {
+			HashNode<T> node = associativeArray.get(i);
+			T element = node.getElement();
+			if (element != null && node.getStatus() == HashNode.VALID) {
+				int j = 0;
+				while (j < newSize) {
+					int slot = f(element, j);
+					if (newAssociativeArray.get(slot).getStatus() == HashNode.EMPTY) {
+						newAssociativeArray.get(slot).setElement(element);
+						newAssociativeArray.get(slot).setStatus(HashNode.VALID);
+						n++;
+						break;
+					} else {
+						j++;
+					}
+				}
+			}
+		}
+
+		this.associativeArray = newAssociativeArray;
+	}
+
 	/**
-	 * Algorithm for resizing the hash table once the LF is above the upper bound
+	 * Algorithm for resizing the hash table once the LF is above its upper bound.
+	 * Recalculates its size and parameters.
 	 */
 	public void dynamicResizing() {
 		int newSize = getNextPrimeNumber(this.B * 2);
 		dynamicResizing(newSize);
 	}
 
-
+	/**
+	 * Creates new associative array for the hash table. Recalculates its
+	 * parameters.
+	 * 
+	 * @param newSize A size of the new hash table (after resizing).
+	 */
 	private void dynamicResizing(int newSize) {
 		ArrayList<HashNode<T>> newAssociativeArray = initializeArray(newSize);
 		setB(newSize);
 		this.R = getPrevPrimeNumber(newSize);
 		this.n = 0;
-		
+
 		for (int i = 0; i < associativeArray.size(); i++) {
 			T element = associativeArray.get(i).getElement();
 			if (element != null) {
@@ -152,11 +353,16 @@ public class HashTable<T> {
 				}
 			}
 		}
-		
+
 		this.associativeArray = newAssociativeArray;
 	}
-	
 
+	/**
+	 * Creates new empty associative array for the hash table.
+	 * 
+	 * @param size the size of the hash table
+	 * @return new empty associative array with the updated size
+	 */
 	private ArrayList<HashNode<T>> initializeArray(int size) {
 		ArrayList<HashNode<T>> newAssociativeArray = new ArrayList<HashNode<T>>(size);
 		for (int i = 0; i < size; i++) {
@@ -212,12 +418,16 @@ public class HashTable<T> {
 	}
 
 	/**
-	 * Prints out the hash table
+	 * Prints out the hash table to the console.
 	 */
 	public void print() {
 		System.out.println(toString());
 	}
 
+	/**
+	 * Returns string representation of the hash table providing indexes of slots,
+	 * its statuses and elements inside.
+	 */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -229,16 +439,16 @@ public class HashTable<T> {
 	}
 
 	/**
-	 * Sets new value for B
+	 * Sets new value for B only if it is prime number
 	 * 
 	 * @param b size of the hash table
 	 */
 	public void setB(int b) {
-		if (isPrime(b)) {
-			B = b;
-		} else {
-			throw new RuntimeException(b + " is not a prime number!");
-		}
+		/*
+		 * if (isPrime(b)) { B = b; } else { throw new RuntimeException(b +
+		 * " is not a prime number!"); }
+		 */
+		this.B = b;
 	}
 
 	/**
@@ -288,6 +498,11 @@ public class HashTable<T> {
 		return true;
 	}
 
+	/**
+	 * Returns an associative array of the hash table containing all of its nodes.
+	 * 
+	 * @return
+	 */
 	public ArrayList<HashNode<T>> getAssociativeArray() {
 		return associativeArray;
 	}

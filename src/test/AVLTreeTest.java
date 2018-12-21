@@ -7,9 +7,18 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import main.AVLTree;
+import main.HashTable;
 
+/**
+ * Tests avl tree methods
+ * @author mskrz
+ *
+ */
 public class AVLTreeTest {
 
+	/**
+	 * Custom personal test. Testing to string method for various options.
+	 */
 	@Test
 	public void test() {
 /*		//this is new branch
@@ -150,6 +159,16 @@ public class AVLTreeTest {
 		System.out.println(b.toString());
 */
 		AVLTree<Integer> b = new AVLTree<Integer>();
+		
+		HashTable<Integer> a = new HashTable<>(5, HashTable.LINEAR_PROBING, 0.5);
+		a.add(4);
+		a.add(13);
+		a.add(24);
+		a.add(3);
+		
+		b.addHashTable(a);
+		assertEquals("13(-1)4(-1)3(0)---24(0)--", b.toString());
+		
 		b.add(48);
 		b.add(26);
 		b.add(84);

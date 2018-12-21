@@ -16,20 +16,23 @@ public class AVLTree<T extends Comparable<T>> {
 	private int height;
 
 	/**
-	 * Get the height of the tree starting in the root node.
+	 * Calculates and returns the height of the tree.
 	 * 
-	 * @return an integer representing the height of the tree.
+	 * @return an integer number representing the height of the tree.
 	 */
 	public int getHeight() {
 		height = calculateHeight(getRoot());
 		return height;
 	}
+	
+	//n = 2h − 1 for complete height trees
+	//log2(n + 1) = h 
 
 	/**
 	 * Recursive algorithm for calculating the height of the tree.
 	 * 
-	 * @param root every next node in the recursion
-	 * @return height of the root node.
+	 * @param root every next node in the recursion which height is calculated.
+	 * @return height of the subtree starting with the root node.
 	 */
 	private int calculateHeight(AVLNode<T> root) {
 		if (root == null) {
@@ -46,7 +49,8 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Reorganizes the tree if the balance factor at any node is incorrect (when |BF| > 1).
+	 * Reorganizes the tree if the balance factor at any node is incorrect (when
+	 * |BF| > 1).
 	 * 
 	 * @param theRoot the node the algorithm is applied to.
 	 * @return the node with updated height.
@@ -158,9 +162,11 @@ public class AVLTree<T extends Comparable<T>> {
 		AVLTree<T> newTree = getIntersectedTree(this, elementsOfOtherTree);
 		return newTree;
 	}
-	
+
 	/**
-	 * Return all elements contained in a tree (accessing the nodes with the preorder traversal)
+	 * Return all elements contained in a tree (accessing the nodes with the
+	 * preorder traversal)
+	 * 
 	 * @param tree a tree from which the elements are taken
 	 * @return a list with the elements
 	 */
@@ -172,8 +178,9 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Adds element of the node to the list 
-	 * @param theRoot a node from which the element is taken
+	 * Adds element of the node to the list
+	 * 
+	 * @param theRoot        a node from which the element is taken
 	 * @param listOfElements a list to which elements are added
 	 */
 	private void addNodeToTheElementList(AVLNode<T> theRoot, List<T> listOfElements) {
@@ -186,7 +193,8 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Returns resulting tree which is the outcome of the intersecting operation
-	 * @param avlTree a tree to be be intersected with other tree
+	 * 
+	 * @param avlTree             a tree to be be intersected with other tree
 	 * @param elementsOfOtherTree elements of other tree
 	 * @return new intersected tree
 	 */
@@ -195,11 +203,12 @@ public class AVLTree<T extends Comparable<T>> {
 		addNodeToNewTree(avlTree.getRoot(), newTree, elementsOfOtherTree);
 		return newTree;
 	}
-	
+
 	/**
 	 * Recursively adds consecutive nodes to the list
-	 * @param theRoot the node being added
-	 * @param newTree new tree formed of intersected nodes 
+	 * 
+	 * @param theRoot             the node being added
+	 * @param newTree             new tree formed of intersected nodes
 	 * @param elementsOfOtherTree elements of the other tree
 	 */
 	private void addNodeToNewTree(AVLNode<T> theRoot, AVLTree<T> newTree, List<T> elementsOfOtherTree) {
@@ -232,7 +241,8 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Gets all the nodes from the tree and adds them recursively to the list
-	 * @param tree the tree from which the nodes are obtained
+	 * 
+	 * @param tree        the tree from which the nodes are obtained
 	 * @param listOfNodes the list to which the nodes are added
 	 */
 	private void addNodesFromTreeToTheList(AVLTree<T> tree, List<AVLNode<T>> listOfNodes) {
@@ -241,9 +251,11 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Adds recursively nodes from the tree (according to the preorder traversal) to the provided list
+	 * Adds recursively nodes from the tree (according to the preorder traversal) to
+	 * the provided list
+	 * 
 	 * @param listOfNodes the list to which the nodes are added
-	 * @param theRoot current node that is being added to the list
+	 * @param theRoot     current node that is being added to the list
 	 */
 	private void addNodesToTheList(List<AVLNode<T>> listOfNodes, AVLNode<T> theRoot) {
 		if (theRoot != null) {
@@ -256,9 +268,11 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Checks whether the list (to which we add joined nodes) already contains the given node with a specific element
+	 * Checks whether the list (to which we add joined nodes) already contains the
+	 * given node with a specific element
+	 * 
 	 * @param listOfNodes the list to which the nodes are added
-	 * @param theRoot current node that is being added to the list
+	 * @param theRoot     current node that is being added to the list
 	 * @return a boolean value representing outcome of the operation
 	 */
 	private boolean listConatinsNode(List<AVLNode<T>> listOfNodes, AVLNode<T> theRoot) {
@@ -270,7 +284,8 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Returns String object representing consecutive nodes according to the in order traversal of a tree
+	 * Returns String object representing consecutive nodes according to the in
+	 * order traversal of a tree
 	 * 
 	 * @return a String reflecting in order traversal of a tree
 	 */
@@ -284,8 +299,10 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Performs in order traversal 
+	 * 
 	 * @param theRoot currently examining node
-	 * @return a full textual representation of a tree (according to the in order traversal)
+	 * @return a full textual representation of a tree (according to the in order
+	 *         traversal)
 	 */
 	private String inOrderTraversal(AVLNode<T> theRoot) {
 		if (theRoot != null)
@@ -295,7 +312,8 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Returns String object representing consecutive nodes according to the post order traversal of a tree
+	 * Returns String object representing consecutive nodes according to the post
+	 * order traversal of a tree
 	 * 
 	 * @return a String reflecting post order traversal of a tree
 	 */
@@ -308,9 +326,11 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Performs post order traversal 
+	 * Performs post order traversal
+	 * 
 	 * @param theRoot currently examining node
-	 * @return a full textual representation of a tree (according to the post order traversal)
+	 * @return a full textual representation of a tree (according to the post order
+	 *         traversal)
 	 */
 	private String postOrderTraversal(AVLNode<T> theRoot) {
 		if (theRoot != null)
@@ -380,13 +400,15 @@ public class AVLTree<T extends Comparable<T>> {
 					throw new IllegalArgumentException("Node already exist!");
 				}
 			}
-			
+
 //			updateBF(nodeToCheck);
 		}
 	}
 
 	/**
-	 * Deletes the node from the tree with the specified element and sets new root if applicable
+	 * Deletes the node from the tree with the specified element and sets new root
+	 * if applicable
+	 * 
 	 * @param element the element of the node to be removed
 	 */
 	public void remove(T element) {
@@ -394,7 +416,8 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Deletes the node from the tree with the specified element 
+	 * Deletes the node from the tree with the specified element
+	 * 
 	 * @param element the element of the node to be removed
 	 */
 	private AVLNode<T> remove(AVLNode<T> theRoot, T element) {
@@ -422,10 +445,10 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Recursive implementation of the algorithm searching for and returning node
+	 * Recursive implementation of the algorithm searching for and returning the node
 	 * with maximum element
 	 * 
-	 * @param theRoot The root node from which the recursion starts 
+	 * @param theRoot The root node from which the recursion starts
 	 * @return Maximum element of the subtree
 	 */
 	public T getMax(AVLNode<T> theRoot) {
@@ -438,6 +461,7 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Recursive version to obtain the maximum node
+	 * 
 	 * @param theRoot the root node from which the recursion starts
 	 * @return the maximum element of the subtree
 	 */
@@ -453,7 +477,7 @@ public class AVLTree<T extends Comparable<T>> {
 	 * Iterative implementation of the algorithm searching for and returning node
 	 * with a maximum element
 	 * 
-	 * @param theRoot The node from which the iteration starts 
+	 * @param theRoot The node from which the iteration starts
 	 * @return Maximum element of the subtree
 	 */
 	public T getMax2(AVLNode<T> theRoot) {
@@ -474,7 +498,9 @@ public class AVLTree<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Searches for the node with the specified element in the tree  in a recursive way.
+	 * Searches for the node with the specified element in the tree in a recursive
+	 * way.
+	 * 
 	 * @param theRoot the node currently examined
 	 * @param element element of the node to be found
 	 * @return a boolean value for the found node
@@ -493,6 +519,16 @@ public class AVLTree<T extends Comparable<T>> {
 		return false;
 	}
 
+	public void addHashTable(HashTable<T> table) {
+		ArrayList<HashNode<T>> nodesList = table.getAssociativeArray();
+		for (int i = 0; i < nodesList.size(); i++) {
+			if (nodesList.get(i).getStatus() == HashNode.VALID) {
+				T element = nodesList.get(i).getElement();
+				add(element);
+			}
+		}
+	}
+
 	/**
 	 * Adds a new node to the tree with the specified node element.
 	 * 
@@ -504,7 +540,8 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Recursive implementation of the adding algorithm.
-	 * @param theRoot the node to which we compare the element 
+	 * 
+	 * @param theRoot the node to which we compare the element
 	 * @param element element to be inserted as the node
 	 * @return node to which the element was inserted
 	 */
@@ -554,6 +591,7 @@ public class AVLTree<T extends Comparable<T>> {
 
 	/**
 	 * Tree represented in the preorder traversal.
+	 * 
 	 * @param theRoot starting node of the traversal
 	 * @return string object representing a tree
 	 */

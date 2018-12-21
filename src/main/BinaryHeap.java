@@ -5,14 +5,17 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Class representing Priority Queue as a Binary Heap
+ * Class representing Priority Queue data structure as a Binary Heap
  * 
  * @author Michal Skrzypek
  *
- * @param <T> element in a heap node
+ * @param <T> data type of the element in a heap node
  */
 public class BinaryHeap<T extends Comparable<T>> {
 
+	/**
+	 * List containing heap nodes
+	 */
 	private ArrayList<T> heap;
 
 	/**
@@ -95,8 +98,8 @@ public class BinaryHeap<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Unconditional filter up method, moves element at the given position to the
-	 * root of the heap
+	 * Unconditional filter up method. Moves the element from the given position to the
+	 * root of the heap using filter up algorithm.
 	 * 
 	 * @param pos An element's position to be filtered up to the root
 	 */
@@ -160,12 +163,15 @@ public class BinaryHeap<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Prints out the heap as an array
+	 * Prints out to the console the heap represented as an array
 	 */
 	public void print() {
 		System.out.println(toString());
 	}
 
+	/**
+	 * Converts a binary heap to its string representation.
+	 */
 	@Override
 	public String toString() {
 		return heap.toString();

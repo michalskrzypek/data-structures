@@ -7,8 +7,16 @@ import org.junit.Test;
 
 import main.BinaryHeap;
 
+/**
+ * Tests BinaryHeap methods
+ * @author mskrz
+ *
+ */
 public class BinaryHeapTest {
 
+	/**
+	 * Tests adding new nodes
+	 */
 	@Test
 	public void testAdd() {
 		BinaryHeap<Integer> a = new BinaryHeap<Integer>();
@@ -26,6 +34,9 @@ public class BinaryHeapTest {
 		assertEquals("[4, 7, 5, 10, 8, 9, 6]", a.toString());
 	}
 	
+	/**
+	 * Tests obtaining min element of the binary heap
+	 */
 	@Test
 	public void testGetMin() {
 		BinaryHeap<Integer> a = new BinaryHeap<Integer>();
@@ -43,6 +54,9 @@ public class BinaryHeapTest {
 		assertEquals("[2, 3, 5, 4, 7, 8, 6, 9]", a.toString());
 	}
 
+	/**
+	 * Tests adding getting min value and returning string representation of the binary heap.
+	 */
 	@Test
 	public void testFull() {
 		BinaryHeap<Character> a = new BinaryHeap<Character>();
@@ -63,6 +77,9 @@ public class BinaryHeapTest {
 		assertEquals("[1, 2, 4, 3, 6, 5, 8, 10, 7, 9]", a.toString());
 	}
 
+	/**
+	 * tests remove method and inverse resizing.
+	 */
 	@Test
 	public void testRemove() {
 		Integer[] i = new Integer[]{3, 4, 12, 6, 5, 16, 15};
