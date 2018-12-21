@@ -3,12 +3,15 @@ package main;
 /**
  * Class representing a node in the AVL tree
  * 
- * @author mskrzy
+ * @author Michal Skrzypek
  *
  * @param <T> Generic parameter representing node element
  */
-public class AVLNode<T> {
+public class AVLNode<T extends Comparable<T>> {
 
+	/**
+	 * element(code) of the node
+	 */
 	private T element;
 	private AVLNode<T> left;
 	private AVLNode<T> right;
@@ -35,11 +38,36 @@ public class AVLNode<T> {
 		this.setLeft(left);
 		this.setRight(right);
 	}
-
+	
+	/**
+	 * Calculates and returns the Balance Factor of the node.
+	 * @return a BF value
+	 */
+	public int getBF() {
+		int rightHeight = -1;
+		int leftHeight = -1;
+		if(right != null) {
+//			right.updateHeight();
+			rightHeight = right.getHeight();
+		}
+		if(left != null) {
+//			left.updateHeight();
+			leftHeight = left.getHeight();
+		}
+		return rightHeight - leftHeight;
+	}
+	
+	/**
+	 * Sets the updated height of the node
+	 */
 	public void updateHeight() {
 		this.height = calculateHeight();
 	}
 	
+	/**
+	 * Calculates height of the node recursively
+	 * @return new height
+	 */
 	private int calculateHeight() {
 		if (this.getLeft() == null && this.getRight() == null) {
 			return 0;
@@ -52,16 +80,24 @@ public class AVLNode<T> {
 		}
 	}
 
+	/**
+	 * Returns the height of the node
+	 * @return the height of the node
+	 */
 	public int getHeight() {
 		return height;
 	}
 
+	/**
+	 * Sets a new height to the node
+	 * @param height height to be set
+	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
 
 	/**
-	 * Prints a representation of a node
+	 * Prints a representation of a node. Provides its element and Balance Factor
 	 */
 	public void print() {
 		System.out.println(this.toString());
@@ -69,9 +105,13 @@ public class AVLNode<T> {
 
 	@Override
 	public String toString() {
+		return this.getElement().toString() + "(" + getBF() + ")";
+	}
+/*	@Override
+	public String toString() {
 		return this.getElement().toString() + "(" + getHeight() + ")";
 	}
-
+*/
 	/**
 	 * Gets element of a node
 	 * 
